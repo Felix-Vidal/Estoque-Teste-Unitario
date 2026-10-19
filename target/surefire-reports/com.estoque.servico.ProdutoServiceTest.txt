@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: com.estoque.servico.ProdutoServiceTest
+-------------------------------------------------------------------------------
+Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.045 s -- in com.estoque.servico.ProdutoServiceTest

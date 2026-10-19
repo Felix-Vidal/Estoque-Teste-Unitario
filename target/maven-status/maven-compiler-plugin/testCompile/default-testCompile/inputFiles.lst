@@ -1,4 +1,9 @@
-/home/iartes/Documentos/estoque/src/test/java/com/estoque/api/FluxoEstoqueTest.java
-/home/iartes/Documentos/estoque/src/test/java/com/estoque/dominio/Ean13Test.java
-/home/iartes/Documentos/estoque/src/test/java/com/estoque/dominio/ProdutoTest.java
-/home/iartes/Documentos/estoque/src/test/java/com/estoque/servico/MovimentacaoServiceTest.java
+C:\Users\dolby\OneDrive\Desktop\Estoque-Teste-Unitario\src\test\java\com\estoque\api\FluxoEstoqueTest.java
+C:\Users\dolby\OneDrive\Desktop\Estoque-Teste-Unitario\src\test\java\com\estoque\dominio\Ean13Test.java
+C:\Users\dolby\OneDrive\Desktop\Estoque-Teste-Unitario\src\test\java\com\estoque\dominio\ProdutoTest.java
+C:\Users\dolby\OneDrive\Desktop\Estoque-Teste-Unitario\src\test\java\com\estoque\servico\CategoriaServiceIntegracaoTest.java
+C:\Users\dolby\OneDrive\Desktop\Estoque-Teste-Unitario\src\test\java\com\estoque\servico\CategoriaServiceTest.java
+C:\Users\dolby\OneDrive\Desktop\Estoque-Teste-Unitario\src\test\java\com\estoque\servico\MovimentacaoServiceTest.java
+C:\Users\dolby\OneDrive\Desktop\Estoque-Teste-Unitario\src\test\java\com\estoque\servico\ProdutoServiceTest.java
+C:\Users\dolby\OneDrive\Desktop\Estoque-Teste-Unitario\src\test\java\com\estoque\servico\RelatorioServiceIntegracaoTest.java
+C:\Users\dolby\OneDrive\Desktop\Estoque-Teste-Unitario\src\test\java\com\estoque\servico\RelatorioServiceTest.java
