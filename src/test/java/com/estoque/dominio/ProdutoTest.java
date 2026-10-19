@@ -3,36 +3,70 @@ package com.estoque.dominio;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
-// Testes unitários da RN17 (alerta de estoque abaixo do mínimo).
 class ProdutoTest {
 
-    private static Produto produtoCom(int estoqueMinimo, int saldo) {
-        Produto produto = new Produto(Ean13.gerar("789123456789"), "Suco de uva", new BigDecimal("8.90"),
-                estoqueMinimo, new Categoria("Bebidas"));
-        if (saldo > 0) {
-            Movimentacao.entrada(produto, saldo, LocalDateTime.of(2026, 1, 1, 10, 0));
-        }
+    private static final Categoria BEBIDAS = new Categoria("Bebidas");
+
+    /** Cria um produto e coloca o saldo desejado (o teste está no mesmo pacote, então acessa adicionarAoSaldo). */
+    private Produto produtoCom(int saldo, int estoqueMinimo) {
+        Produto produto = new Produto(Ean13.gerar("789123456789"), "Suco de uva",
+                new BigDecimal("8.90"), estoqueMinimo, BEBIDAS);
+        produto.adicionarAoSaldo(saldo);
         return produto;
     }
 
-    @ParameterizedTest(name = "mínimo {0}, saldo {1} → abaixo={2}, faltam {3}")
+    //RN17
+    @ParameterizedTest(name = "saldo {0}, mínimo {1} -> abaixo do mínimo: {2}")
     @CsvSource({
-            "10,  0, true,  10",
-            "10,  9, true,   1",
-            "10, 10, false,  0",
-            "10, 11, false,  0",
-            " 0,  0, false,  0",
+            "9,  10, true",   // um abaixo do mínimo
+            "10, 10, false",  // exatamente no mínimo: não gera alerta
+            "11, 10, false",  // um acima do mínimo
+            "0,  1,  true",   // zerado com mínimo 1
+            "0,  0,  false",  // zerado com mínimo 0: nunca fica abaixo
     })
-    void deveAlertarSomenteQuandoSaldoForMenorQueOMinimo(int estoqueMinimo, int saldo,
-                                                   boolean abaixo, int faltante) {
-        Produto produto = produtoCom(estoqueMinimo, saldo);
+    void deveIdentificarProdutoAbaixoDoMinimo(int saldo, int estoqueMinimo, boolean esperado) {
+        Produto produto = produtoCom(saldo, estoqueMinimo);
 
-        assertThat(produto.estaAbaixoDoMinimo()).isEqualTo(abaixo);
-        assertThat(produto.quantidadeFaltante()).isEqualTo(faltante);
+        assertThat(produto.estaAbaixoDoMinimo()).isEqualTo(esperado);
+    }
+
+    //RN17
+    @Test
+    void produtoRecemCadastradoComMinimoMaiorQueZeroJaEstaAbaixoDoMinimo() {
+        // RN08: todo produto nasce com saldo zero
+        Produto produto = produtoCom(0, 10);
+
+        assertThat(produto.estaAbaixoDoMinimo()).isTrue();
+    }
+
+    //RN17
+    @Test
+    void deveFicarAbaixoDoMinimoQuandoOMinimoSobeSemMovimentacao() {
+        Produto produto = produtoCom(10, 10);
+        assertThat(produto.estaAbaixoDoMinimo()).isFalse();
+
+        produto.atualizarDados("Suco de uva", new BigDecimal("8.90"), 11, BEBIDAS);
+
+        assertThat(produto.estaAbaixoDoMinimo()).isTrue();
+    }
+
+    //RN17
+    @ParameterizedTest(name = "saldo {0}, mínimo {1} -> faltam {2}")
+    @CsvSource({
+            "7,  10, 3",
+            "9,  10, 1",
+            "10, 10, 0",   // no mínimo: não falta nada
+            "15, 10, 0",   // acima do mínimo: zero, nunca negativo
+            "0,  10, 10",
+    })
+    void deveCalcularQuantidadeFaltante(int saldo, int estoqueMinimo, int esperado) {
+        Produto produto = produtoCom(saldo, estoqueMinimo);
+
+        assertThat(produto.quantidadeFaltante()).isEqualTo(esperado);
     }
 }
