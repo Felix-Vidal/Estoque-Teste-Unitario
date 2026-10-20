@@ -1,0 +1,49 @@
+# Nome do workflow, exibido na aba "Actions" do GitHub
+name: Testes
+
+# QUANDO o workflow roda (os "gatilhos")
+on:
+  push:                 # a cada commit enviado, em qualquer branch
+  pull_request:         # a cada pull request aberto ou atualizado para a main
+    branches: [main]
+  workflow_dispatch:    # permite rodar manualmente pelo botão "Run workflow"
+
+# Permissão mínima: o workflow só precisa ler o código
+permissions:
+  contents: read
+
+# O QUE o workflow faz: um ou mais "jobs"
+jobs:
+  testes:
+    name: Compilar e rodar os testes
+    runs-on: ubuntu-latest    # máquina virtual Linux, criada do zero pelo GitHub a cada execução
+    timeout-minutes: 10       # se travar, é cancelado depois de 10 minutos
+
+    # Passos executados em ordem; se um falhar, os seguintes não rodam
+    steps:
+      # 1. A máquina começa vazia: baixa o código do repositório
+      - name: Baixar o código
+        uses: actions/checkout@v5
+
+      # 2. Instala o Java 25 (o mesmo do pom.xml)
+      - name: Instalar o Java 25
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin   # distribuição gratuita do OpenJDK
+          java-version: '25'
+          cache: maven            # guarda as dependências entre execuções, deixando as próximas mais rápidas
+
+      # 3. Compila o projeto e roda todos os testes (JUnit, Mockito e integração com H2)
+      #    -B = modo "batch": saída de log mais limpa, sem interação
+      #    Se algum teste falhar, o Maven termina com erro e o workflow fica vermelho
+      - name: Rodar os testes
+        run: mvn -B test
+
+      # 4. Guarda os relatórios de teste para download, mesmo quando os testes falham
+      - name: Publicar relatórios dos testes
+        if: always()              # roda sempre, e não só quando os passos anteriores passaram
+        uses: actions/upload-artifact@v4
+        with:
+          name: relatorios-de-teste
+          path: target/surefire-reports/
+          retention-days: 7
