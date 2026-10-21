@@ -11,6 +11,7 @@ on:
 # Permissão mínima: o workflow só precisa ler o código
 permissions:
   contents: read
+  checks: write
 
 # O QUE o workflow faz: um ou mais "jobs"
 jobs:
@@ -38,6 +39,15 @@ jobs:
       #    Se algum teste falhar, o Maven termina com erro e o workflow fica vermelho
       - name: Rodar os testes
         run: mvn -B test
+
+            # Lê os relatórios XML e mostra os testes que falharam na página da execução e no pull request
+      - name: Mostrar resultado dos testes
+        if: always()              # roda mesmo quando os testes falham
+        uses: mikepenz/action-junit-report@v6
+        with:
+          report_paths: 'target/surefire-reports/TEST-*.xml'   # onde o Maven grava os relatórios
+          check_name: Relatório dos testes                     # nome que aparece na lista de checks
+          detailed_summary: true                               # tabela com o resultado de cada classe de teste
 
       # 4. Guarda os relatórios de teste para download, mesmo quando os testes falham
       - name: Publicar relatórios dos testes
