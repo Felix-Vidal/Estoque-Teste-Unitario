@@ -47,7 +47,6 @@ class CategoriaServiceIntegracaoTest {
     @Test
     void deveRecusarNomeRepetidoComEspacosNasPontas() {
         service.criar("Bebidas");
-
         RegraNegocioException excecao = assertThrows(RegraNegocioException.class,
                 () -> service.criar("  bebidas  "));
 
