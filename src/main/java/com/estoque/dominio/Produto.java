@@ -57,7 +57,7 @@ public class Produto {
 
     /** RN17: abaixo do mínimo quando o saldo é MENOR que o mínimo (igual não conta). */
     public boolean estaAbaixoDoMinimo() {
-        return saldo < estoqueMinimo;
+        return saldo <= estoqueMinimo;
     }
 
     /** Quanto falta para o saldo atingir o mínimo (zero se não estiver abaixo). */
